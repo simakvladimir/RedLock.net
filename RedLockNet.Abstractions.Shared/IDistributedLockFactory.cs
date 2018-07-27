@@ -16,6 +16,7 @@ namespace RedLockNet
 		/// <returns>A RedLock object.</returns>
 		IRedLock CreateLock(string resource, TimeSpan expiryTime);
 
+#if !NET40
 		/// <summary>
 		/// Gets a RedLock using the factory's set of redis endpoints. You should check the IsAcquired property before performing actions.
 		/// </summary>
@@ -24,6 +25,7 @@ namespace RedLockNet
 		/// RedLocks will automatically extend if the process that created the RedLock is still alive and the RedLock hasn't been disposed.</param>
 		/// <returns>A RedLock object.</returns>
 		Task<IRedLock> CreateLockAsync(string resource, TimeSpan expiryTime);
+#endif
 
 		/// <summary>
 		/// Gets a RedLock using the factory's set of redis endpoints. You should check the IsAcquired property before performing actions.
@@ -38,6 +40,7 @@ namespace RedLockNet
 		/// <returns>A RedLock object.</returns>
 		IRedLock CreateLock(string resource, TimeSpan expiryTime, TimeSpan waitTime, TimeSpan retryTime, CancellationToken? cancellationToken = null);
 
+#if !NET40
 		/// <summary>
 		/// Gets a RedLock using the factory's set of redis endpoints. You should check the IsAcquired property before performing actions.
 		/// Blocks and retries up to the specified time limits.
@@ -50,5 +53,6 @@ namespace RedLockNet
 		/// <param name="cancellationToken">CancellationToken to abort waiting for blocking lock.</param>
 		/// <returns>A RedLock object.</returns>
 		Task<IRedLock> CreateLockAsync(string resource, TimeSpan expiryTime, TimeSpan waitTime, TimeSpan retryTime, CancellationToken? cancellationToken = null);
+#endif
 	}
 }

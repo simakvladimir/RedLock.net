@@ -7,9 +7,12 @@ namespace RedLockNet.SERedis.Util
 	{
 		internal static string GetEmbeddedResource(string name)
 		{
-			var assembly = typeof(EmbeddedResourceLoader).GetTypeInfo().Assembly;
-
-			using (var stream = assembly.GetManifestResourceStream(name))
+#if NET40
+		    var assembly = typeof(EmbeddedResourceLoader).Assembly;
+#else
+		    var assembly = typeof(EmbeddedResourceLoader).GetTypeInfo().Assembly;
+#endif
+            using (var stream = assembly.GetManifestResourceStream(name))
 			using (var streamReader = new StreamReader(stream))
 			{
 				return streamReader.ReadToEnd();

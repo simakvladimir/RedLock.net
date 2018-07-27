@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;net46;netstandard1.5</TargetFrameworks>
+    <TargetFrameworks>net40;net45;net46;netstandard1.5</TargetFrameworks>
+    <AppConfig Condition="'$(TargetFramework)' == 'net40'">../net40.config</AppConfig>
+    <AutoUnifyAssemblyReferences Condition="'$(TargetFramework)' == 'net40'">false</AutoUnifyAssemblyReferences>
     <AssemblyName>RedLockNet.SERedis</AssemblyName>
     <PackageId>RedLock.net</PackageId>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
@@ -24,10 +26,17 @@
 
   <ItemGroup>
     <PackageReference Include="StackExchange.Redis" Version="1.1.608" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.1" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <PackageReference Include="log4net"  Version="2.0.8.0" />
+  </ItemGroup>
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,5 +56,5 @@
   </ItemGroup>
 
   <Import Project="..\RedLockNet.SERedis.Shared\RedLockNet.SERedis.Shared.projitems" Label="Shared" />
-
+  
 </Project>

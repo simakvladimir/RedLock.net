@@ -1,15 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net451;net46;netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks>net40;net451;net46;netcoreapp1.1</TargetFrameworks>
     <AssemblyName>RedLockNet.Tests</AssemblyName>
     <RootNamespace>RedLockNet.Tests</RootNamespace>
+    <AppConfig Condition="'$(TargetFramework)' == 'net40'">../net40.config</AppConfig>
+    <AutoUnifyAssemblyReferences Condition="'$(TargetFramework)' == 'net40'">false</AutoUnifyAssemblyReferences>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
+    <PackageReference Include="log4net"  Version="2.0.8.0" />
+  </ItemGroup>
+  
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net40' ">
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="10.4.0" />
     <PackageReference Include="NUnit" Version="3.7.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.8.0-alpha1" />
     <PackageReference Include="Redis-64" Version="3.0.503" />

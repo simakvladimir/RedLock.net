@@ -1,20 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
+using log4net;
 using RedLockNet.SERedis.Internal;
 using RedLockNet.SERedis.Util;
 using StackExchange.Redis;
 
 namespace RedLockNet.SERedis.Configuration
 {
-	/// <summary>
-	/// A connection provider that manages its own connections to Redis
-	/// </summary>
-	public class InternallyManagedRedLockConnectionProvider : RedLockConnectionProvider
+    /// <summary>
+    /// A connection provider that manages its own connections to Redis
+    /// </summary>
+    public class InternallyManagedRedLockConnectionProvider : RedLockConnectionProvider
 	{
-		private readonly ILoggerFactory loggerFactory;
-		public IList<RedLockEndPoint> EndPoints { get; set; }
+        private readonly ILog logger = LogManager.GetLogger(typeof(InternallyManagedRedLockConnectionProvider));
+        public IList<RedLockEndPoint> EndPoints { get; set; }
 
 		private ICollection<RedisConnection> connections;
 
@@ -22,21 +22,18 @@ namespace RedLockNet.SERedis.Configuration
 		private const int DefaultSyncTimeout = 1000;
 		private const int DefaultConfigCheckSeconds = 10;
 
-		public InternallyManagedRedLockConnectionProvider(ILoggerFactory loggerFactory = null)
-		{
-			this.loggerFactory = loggerFactory ?? new LoggerFactory();
 
-			this.EndPoints = new List<RedLockEndPoint>();
-		}
+	    public InternallyManagedRedLockConnectionProvider()
+	    {
+	        this.EndPoints = new List<RedLockEndPoint>();
+        }
 
-		internal override ICollection<RedisConnection> CreateRedisConnections()
+        internal override ICollection<RedisConnection> CreateRedisConnections()
 		{
 			if (this.EndPoints == null || !this.EndPoints.Any())
 			{
 				throw new ArgumentException("No endpoints specified");
 			}
-
-			var logger = loggerFactory.CreateLogger<InternallyManagedRedLockConnectionProvider>();
 
 			connections = new List<RedisConnection>(this.EndPoints.Count);
 
@@ -66,27 +63,27 @@ namespace RedLockNet.SERedis.Configuration
 
 				redisConnection.ConnectionMultiplexer.ConnectionFailed += (sender, args) =>
 				{
-					logger.LogWarning($"ConnectionFailed: {args.EndPoint.GetFriendlyName()} ConnectionType: {args.ConnectionType} FailureType: {args.FailureType}");
+					logger.Warn($"ConnectionFailed: {args.EndPoint.GetFriendlyName()} ConnectionType: {args.ConnectionType} FailureType: {args.FailureType}");
 				};
 
 				redisConnection.ConnectionMultiplexer.ConnectionRestored += (sender, args) =>
 				{
-					logger.LogWarning($"ConnectionRestored: {args.EndPoint.GetFriendlyName()} ConnectionType: {args.ConnectionType} FailureType: {args.FailureType}");
+					logger.Warn($"ConnectionRestored: {args.EndPoint.GetFriendlyName()} ConnectionType: {args.ConnectionType} FailureType: {args.FailureType}");
 				};
 
 				redisConnection.ConnectionMultiplexer.ConfigurationChanged += (sender, args) =>
 				{
-					logger.LogDebug($"ConfigurationChanged: {args.EndPoint.GetFriendlyName()}");
+					logger.Warn($"ConfigurationChanged: {args.EndPoint.GetFriendlyName()}");
 				};
 
 				redisConnection.ConnectionMultiplexer.ConfigurationChangedBroadcast += (sender, args) =>
 				{
-					logger.LogDebug($"ConfigurationChangedBroadcast: {args.EndPoint.GetFriendlyName()}");
+					logger.Warn($"ConfigurationChangedBroadcast: {args.EndPoint.GetFriendlyName()}");
 				};
 
 				redisConnection.ConnectionMultiplexer.ErrorMessage += (sender, args) =>
 				{
-					logger.LogWarning($"ErrorMessage: {args.EndPoint.GetFriendlyName()} Message: {args.Message}");
+					logger.Warn($"ErrorMessage: {args.EndPoint.GetFriendlyName()} Message: {args.Message}");
 				};
 
 				connections.Add(redisConnection);
